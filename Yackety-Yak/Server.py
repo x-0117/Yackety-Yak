@@ -23,11 +23,23 @@ def receive():
     t1 = threading.Thread(target=receive)
     t1.start()
     while True:
-        message = str(c.recv(1024), "utf-8")
+        flag = str(c.recv(1024), "utf-8")
+        for i in clients:
+            if i != c:
+                i.send(str.encode(flag))
+        shit = c.recv(1024)
         message_count += 1
-        for i in range(len(clients)):
-            if clients[i] != c:
-                clients[i].send(str.encode(str(addr[1])  + ' _:_ ' + message))
+        
+        if flag == '0':
+            message = str(shit, "utf-8")
+            for i in range(len(clients)):
+                if clients[i] != c:
+                    clients[i].send(str.encode(str(addr[1])  + ' _:_ ' + message))
+        
+        if flag == '1':
+            for i in clients:
+                if i != c:
+                    i.send(shit)
 
 t1 = threading.Thread(target=receive)
 
